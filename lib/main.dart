@@ -16,11 +16,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CourseCard(),
+      home: LoginScreen(),
       routes: {
         "/Login": (context) => LoginScreen(),
         "/Home": (context) => HomeScreen(),
         "/Feeds": (context) => FeedsScreen(),
+        "/Card": (context) => CourseCard(id: 1,),
       },
     );
   }

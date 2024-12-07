@@ -11,8 +11,6 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLiked = false;
-  bool isCommented = false;
-  bool isShared = false;
 
   @override
   Widget build(BuildContext context) {
