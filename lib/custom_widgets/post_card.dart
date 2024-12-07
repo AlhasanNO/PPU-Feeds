@@ -20,11 +20,12 @@ class _PostCardState extends State<PostCard> {
       children: [
         Card(
           color: Colors.white,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,8 +96,8 @@ class _PostCardState extends State<PostCard> {
                     )
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
