@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
+// ignore_for_file: avoid_print, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:ppu_feeds/custom_widgets/course_card.dart';
 import 'package:ppu_feeds/models/course.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -14,16 +15,15 @@ class FeedsScreen extends StatefulWidget {
 }
 
 class _FeedsScreenState extends State<FeedsScreen> {
-  List<Course> courses = [];
-  late Future<List<Course>> futurecourse;
+  late Future<List<Course>> futureCourses;
 
   @override
   void initState() {
     super.initState();
-    futurecourse = fetchedcourse();
+    futureCourses = fetchedCourses();
   }
 
-  Future<List<Course>> fetchedcourse() async {
+  Future<List<Course>> fetchedCourses() async {
     final prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString("token");
 
@@ -34,29 +34,49 @@ class _FeedsScreenState extends State<FeedsScreen> {
       );
 
       if (response.statusCode == 200) {
-        print(response.body);
         var jsonResponse = jsonDecode(response.body);
-        var jsonList = jsonResponse as List;
-        return jsonList.map((e) => Course.fromJson(e)).toList();
+        List<dynamic> coursesJson = jsonResponse["courses"];
+        return coursesJson.map((e) => Course.fromJson(e)).toList();
       } else {
-        print("Error");
+        throw Exception('Failed to load courses');
       }
     } catch (e) {
-      print("Error $e");
+      print(e);
+      return Future.error(e);
     }
-
-    return [];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0XFFC4FFF9),
       appBar: AppBar(
         backgroundColor: Color(0xFF0A7075),
         title: Text(
-          "Feeds",
+          "Courses",
           style: TextStyle(fontSize: 24, color: Colors.white),
         ),
+      ),
+      body: FutureBuilder<List<Course>>(
+        future: futureCourses,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (snapshot.data!.isEmpty) {
+            return Center(child: Text("No courses available"));
+          } else {
+            final courses = snapshot.data!;
+            return ListView.builder(
+              itemCount: courses.length,
+              itemBuilder: (context, index) {
+                final course = courses[index];
+                return CourseCard(id: course.id);
+              },
+            );
+          }
+        },
       ),
     );
   }

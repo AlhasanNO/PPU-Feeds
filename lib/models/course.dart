@@ -1,8 +1,8 @@
 class Course {
-  final int id;
-  final String name;
-  final String collegeName;
-  final int collegeId;
+  int id;
+  String name;
+  String collegeName;
+  int collegeId;
 
   Course({
     required this.id,
@@ -13,10 +13,10 @@ class Course {
 
   factory Course.fromJson(dynamic jsonObject) {
     return Course(
-      id: int.parse(jsonObject["id"]),
+      id: jsonObject["id"],
       name: jsonObject["name"],
       collegeName: jsonObject["college"],
-      collegeId: int.parse(jsonObject["college_id"]),
+      collegeId: jsonObject["college_id"],
     );
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, prefer_const_constructors_in_immutables
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;

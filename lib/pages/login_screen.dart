@@ -27,13 +27,12 @@ class _LoginScreenState extends State<LoginScreen> {
         dynamic jsonObject = jsonDecode(response.body);
 
         if (jsonObject["status"] == "success") {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(jsonObject["status"])));
           String token = jsonObject["session_token"];
-          print(token);
+          print("Token: $token");
           final prefs = await SharedPreferences.getInstance();
-          prefs.setString("token", token);
-          Navigator.pushReplacementNamed(context, "/Home");
+          await prefs.setString("token", token);
+
+          Navigator.pushReplacementNamed(context, "/Feeds");
         } else {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(jsonObject["error"])));
