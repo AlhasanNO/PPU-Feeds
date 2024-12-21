@@ -13,7 +13,7 @@ class Comment {
 
   factory Comment.fromJson(dynamic jsonObject) {
     return Comment(
-      id: int.parse(jsonObject["id"]),
+      id: jsonObject["id"],
       body: jsonObject["body"],
       datePosted: jsonObject["date_posted"],
       author: jsonObject["author"],

@@ -1,8 +1,8 @@
 class Course {
-  int id;
-  String name;
-  String collegeName;
-  int collegeId;
+  final int id;
+  final String name;
+  final String collegeName;
+  final int collegeId;
 
   Course({
     required this.id,

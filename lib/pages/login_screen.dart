@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString("token", token);
 
-          Navigator.pushReplacementNamed(context, "/Feeds");
+          Navigator.pushReplacementNamed(context, "/Home");
         } else {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(jsonObject["error"])));

@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:ppu_feeds/custom_widgets/course_card.dart';
@@ -41,7 +40,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
         throw Exception('Failed to load courses');
       }
     } catch (e) {
-      print(e);
       return Future.error(e);
     }
   }
@@ -49,10 +47,10 @@ class _FeedsScreenState extends State<FeedsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0XFFC4FFF9),
+      backgroundColor: const Color(0XFFC4FFF9),
       appBar: AppBar(
-        backgroundColor: Color(0xFF0A7075),
-        title: Text(
+        backgroundColor: const Color(0xFF0A7075),
+        title: const Text(
           "Courses",
           style: TextStyle(fontSize: 24, color: Colors.white),
         ),
@@ -61,11 +59,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
         future: futureCourses,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (snapshot.data!.isEmpty) {
-            return Center(child: Text("No courses available"));
+            return const Center(child: Text("No courses available"));
           } else {
             final courses = snapshot.data!;
             return ListView.builder(

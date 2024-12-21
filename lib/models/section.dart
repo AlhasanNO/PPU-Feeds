@@ -1,7 +1,7 @@
 class Section {
   final int id;
   final String name;
-  final String course;  // Changed from Course to String
+  final String course;
   final String lecturer;
 
   Section({
@@ -15,7 +15,7 @@ class Section {
     return Section(
       id: jsonObject["id"],
       name: jsonObject["name"],
-      course: jsonObject["course"],  // Now directly using the string
+      course: jsonObject["course"],
       lecturer: jsonObject["lecturer"],
     );
   }
