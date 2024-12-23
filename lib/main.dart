@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, use_build_context_synchronously, prefer_const_constructors, avoid_print, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:ppu_feeds/pages/coursefeed_screen.dart';
 import 'package:ppu_feeds/pages/feeds_screen.dart';
 import 'package:ppu_feeds/pages/home_screen.dart';
 import 'package:ppu_feeds/pages/login_screen.dart';

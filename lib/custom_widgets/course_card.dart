@@ -145,175 +145,175 @@ class _CourseCardState extends State<CourseCard> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Course>(
-      future: futureCourse,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        } else if (!snapshot.hasData) {
-          return const Center(child: Text("No courses found"));
-        } else {
-          final course = snapshot.data!;
-          return SingleChildScrollView(
-            child: Column(
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() {
+          futureCourse = fetchCourse(widget.id);
+          futureSections = fetchSections(widget.id);
+          futureSubs = fetchSubs();
+        });
+      },
+      child: FutureBuilder<Course>(
+        future: futureCourse,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text("No courses found"));
+          } else {
+            final course = snapshot.data!;
+            return Column(
               children: [
-                Card(
+                const SizedBox(
+                  height: 3.0,
+                ),
+                Container(
                   color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    course.name,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  course.name,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Text(
-                                    course.collegeName,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  course.collegeName,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(height: 10),
-                                  FutureBuilder<List<Section>>(
-                                    future: futureSections,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      } else if (snapshot.hasError) {
-                                        return Center(
-                                            child: Text("${snapshot.error}"));
-                                      } else if (!snapshot.hasData ||
-                                          snapshot.data!.isEmpty) {
-                                        return const Text("No sections found");
-                                      } else {
-                                        final List<Section> sections =
-                                            snapshot.data!;
-                                        return SingleChildScrollView(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: sections.map(
-                                              (section) {
-                                                return ListTile(
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 3.0),
-                                                  title: Text(
-                                                    "Section: ${section.name}",
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                ),
+                                const SizedBox(height: 10),
+                                FutureBuilder<List<Section>>(
+                                  future: futureSections,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                          child: Text("${snapshot.error}"));
+                                    } else if (!snapshot.hasData ||
+                                        snapshot.data!.isEmpty) {
+                                      return const Text("No sections found");
+                                    } else {
+                                      final List<Section> sections =
+                                          snapshot.data!;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: sections.map(
+                                          (section) {
+                                            return ListTile(
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 3.0),
+                                              title: Text(
+                                                "Section: ${section.name}",
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              subtitle: Text(
+                                                "Lecturer: ${section.lecturer}",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              trailing: FutureBuilder<
+                                                  List<Subscription>>(
+                                                future: futureSubs,
+                                                builder: (context, snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        "${snapshot.error}");
+                                                  }
+                                                  final subscription =
+                                                      snapshot.data
+                                                          ?.firstWhere(
+                                                    (sub) =>
+                                                        sub.sectionId ==
+                                                        section.id,
+                                                    orElse: () =>
+                                                        Subscription(
+                                                      id: -1,
+                                                      sectionId: section.id,
+                                                      section: section.name,
+                                                      course: course.name,
+                                                      lecturer:
+                                                          section.lecturer,
+                                                      subscriptionDate: DateTime
+                                                              .now()
+                                                          .toIso8601String(),
                                                     ),
-                                                  ),
-                                                  subtitle: Text(
-                                                    "Lecturer: ${section.lecturer}",
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                  trailing: FutureBuilder<
-                                                      List<Subscription>>(
-                                                    future: futureSubs,
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot.hasError) {
-                                                        return Text(
-                                                            "${snapshot.error}");
+                                                  );
+    
+                                                  final isSubscribed =
+                                                      subscription?.id != -1;
+    
+                                                  return TextButton.icon(
+                                                    onPressed: () {
+                                                      if (isSubscribed) {
+                                                        _unsubscribeCourseSection(
+                                                          course.id,
+                                                          section.id,
+                                                          subscription!.id,
+                                                        );
+                                                      } else {
+                                                        _subscribeCourseSection(
+                                                          course.id,
+                                                          section.id,
+                                                        );
                                                       }
-
-                                                      // Check if this section is in the subscriptions
-                                                      final subscription =
-                                                          snapshot.data
-                                                              ?.firstWhere(
-                                                        (sub) =>
-                                                            sub.sectionId ==
-                                                            section.id,
-                                                        orElse: () =>
-                                                            Subscription(
-                                                          id: -1,
-                                                          sectionId: section.id,
-                                                          section: section.name,
-                                                          course: course.name,
-                                                          lecturer:
-                                                              section.lecturer,
-                                                          subscriptionDate:
-                                                              DateTime.now()
-                                                                  .toIso8601String(),
-                                                        ),
-                                                      );
-
-                                                      final isSubscribed =
-                                                          subscription?.id !=
-                                                              -1;
-
-                                                      return TextButton.icon(
-                                                        onPressed: () {
-                                                          if (isSubscribed) {
-                                                            _unsubscribeCourseSection(
-                                                              course.id,
-                                                              section.id,
-                                                              subscription!.id,
-                                                            );
-                                                          } else {
-                                                            _subscribeCourseSection(
-                                                              course.id,
-                                                              section.id,
-                                                            );
-                                                          }
-                                                        },
-                                                        style: TextButton
-                                                            .styleFrom(
-                                                          foregroundColor:
-                                                              Colors.black,
-                                                        ),
-                                                        icon: Icon(isSubscribed
-                                                            ? Icons.check
-                                                            : Icons.add),
-                                                        label: Text(isSubscribed
-                                                            ? "Subscribed"
-                                                            : "Subscribe"),
-                                                      );
                                                     },
-                                                  ),
-                                                );
-                                              },
-                                            ).toList(),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
+                                                    style:
+                                                        TextButton.styleFrom(
+                                                      foregroundColor:
+                                                          Colors.black,
+                                                    ),
+                                                    icon: Icon(
+                                                      isSubscribed
+                                                          ? Icons.check
+                                                          : Icons.add,
+                                                      color: Colors.black,
+                                                    ),
+                                                    label: Text(isSubscribed
+                                                        ? "Subscribed"
+                                                        : "Subscribe"),
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        ).toList(),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
+                const SizedBox(
+                  height: 3.0,
+                ),
               ],
-            ),
-          );
-        }
-      },
+            );
+          }
+        },
+      ),
     );
   }
 }

@@ -1,126 +1,132 @@
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
-// import 'package:ppu_feeds/models/comment.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ppu_feeds/models/comment.dart';
 
-// class CommentsFeedScreen extends StatefulWidget {
-//   final String postId;
-//   final String postTitle;
+class PostCommentsScreen extends StatefulWidget {
+  final int courseId;
+  final int sectionId;
+  final int postId;
 
-//   const CommentsFeedScreen({
-//     super.key,
-//     required this.postId,
-//     required this.postTitle,
-//   });
+  const PostCommentsScreen({
+    super.key,
+    required this.courseId,
+    required this.sectionId,
+    required this.postId,
+  });
 
-//   @override
-//   State<CommentsFeedScreen> createState() => _CommentsFeedScreenState();
-// }
+  @override
+  State<PostCommentsScreen> createState() => _PostCommentsScreenState();
+}
 
-// class _CommentsFeedScreenState extends State<CommentsFeedScreen> {
-//   late Future<List<Comment>> futureComments;
+class _PostCommentsScreenState extends State<PostCommentsScreen> {
+  late Future<List<Comment>> futureComments;
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     futureComments = fetchComments(widget.postId);
-//   }
+  @override
+  void initState() {
+    super.initState();
+    futureComments =
+        fetchComments(widget.courseId, widget.sectionId, widget.postId);
+  }
 
-//   Future<List<Comment>> fetchComments(String postId) async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final String? token = prefs.getString("token");
+  Future<List<Comment>> fetchComments(
+      int courseId, int sectionId, int postId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString("token");
 
-//     try {
-//       final response = await http.get(
-//         Uri.parse("http://feeds.ppu.edu/api/v1/posts/$postId/comments"),
-//         headers: {"Authorization": "$token"},
-//       );
+    try {
+      final response = await http.get(
+        Uri.parse(
+            "http://feeds.ppu.edu/api/v1/courses/$courseId/sections/$sectionId/posts/$postId/comments"),
+        headers: {"Authorization": "$token"},
+      );
 
-//       if (response.statusCode == 200) {
-//         var jsonList = jsonDecode(response.body) as List;
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        List<dynamic> commentsJson = jsonResponse["comments"];
+        return commentsJson.map((e) => Comment.fromJson(e)).toList();
+      } else {
+        throw Exception("Failed to load comments: ${response.statusCode}");
+      }
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
 
-//         return jsonList
-//             .map((json) => Comment.fromJson(json))
-//             .toList()
-//             .reversed
-//             .toList();
-//       } else {
-//         print("Failed to load comments: ${response.statusCode}");
-//         return [];
-//       }
-//     } catch (e) {
-//       print("Error fetching comments: $e");
-//       return [];
-//     }
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Comments'),
+      ),
+      body: FutureBuilder<List<Comment>>(
+        future: futureComments,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No comments found"));
+          }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.postTitle),
-//         backgroundColor: const Color(0xFF0A7075),
-//       ),
-//       body: FutureBuilder<List<Comment>>(
-//         future: futureComments,
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return const Center(child: CircularProgressIndicator());
-//           } else if (snapshot.hasError) {
-//             return const Center(
-//               child: Text(
-//                 "Error loading comments",
-//                 style: TextStyle(fontSize: 18),
-//               ),
-//             );
-//           } else if (snapshot.hasData) {
-//             final comments = snapshot.data!;
-//             if (comments.isEmpty) {
-//               return const Center(
-//                 child: Text(
-//                   "No comments yet.",
-//                   style: TextStyle(fontSize: 18),
-//                 ),
-//               );
-//             }
-//             return ListView.builder(
-//               itemCount: comments.length,
-//               itemBuilder: (context, index) {
-//                 final comment = comments[index];
-//                 return Card(
-//                   margin:
-//                       const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-//                   elevation: 3,
-//                   child: ListTile(
-//                     title: Text(comment.body),
-//                     subtitle: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text("Date: ${comment.datePosted}"),
-//                         Text("User: ${comment.userName}"),
-//                         Text("Likes: ${comment.likes}"),
-//                       ],
-//                     ),
-//                     trailing: IconButton(
-//                       icon: Icon(Icons.thumb_up,
-//                           color: comment.isLiked ? Colors.blue : Colors.grey),
-//                       onPressed: () {
-//                         setState(() {
-//                           comment.isLiked = !comment.isLiked;
-//                           comment.isLiked ? comment.likes++ : comment.likes--;
-//                         });
-//                       },
-//                     ),
-//                   ),
-//                 );
-//               },
-//             );
-//           } else {
-//             return const Center(child: Text("No comments available."));
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
+          final comments = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: comments.length,
+            itemBuilder: (context, index) {
+              final comment = comments[index];
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              comment.author,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 1.0,
+                            ),
+                            Text(
+                              comment.datePosted,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Divider(),
+                            Text(
+                              comment.body,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}

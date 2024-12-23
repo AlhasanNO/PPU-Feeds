@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:ppu_feeds/app_drawer.dart';
 import 'package:ppu_feeds/custom_widgets/course_card.dart';
 import 'package:ppu_feeds/models/course.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,7 +47,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFFC4FFF9),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A7075),
         title: const Text(
@@ -55,6 +54,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
           style: TextStyle(fontSize: 24, color: Colors.white),
         ),
       ),
+      drawer: const AppDrawer(),
       body: FutureBuilder<List<Course>>(
         future: futureCourses,
         builder: (context, snapshot) {
@@ -69,7 +69,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
             return ListView.builder(
               itemCount: courses.length,
               itemBuilder: (context, index) {
-                final course = courses[index];
+                final Course course = courses[index];
                 return CourseCard(id: course.id);
               },
             );
