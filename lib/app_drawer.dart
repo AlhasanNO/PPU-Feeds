@@ -6,7 +6,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      shape: LinearBorder(),
+      shape: const LinearBorder(),
       child: ListView(
         padding: EdgeInsets.zero,
         children: [

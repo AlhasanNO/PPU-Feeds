@@ -46,22 +46,22 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: Color(0xFF0A7075)),
-        child: Column(
-          children: [
-            const SizedBox(height: 120),
-            Text(
-              "PPU Feeds",
-              style: TextStyle(
-                fontSize: 32,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(color: Color(0xFF0A7075)),
+          child: Column(
+            children: [
+              const SizedBox(height: 120),
+              Text(
+                "PPU Feeds",
+                style: TextStyle(
+                  fontSize: 32,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 50),
-            Expanded(
-              child: Container(
+              const SizedBox(height: 50),
+              Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(
@@ -101,9 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
@@ -144,8 +142,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ppu_feeds/custom_widgets/post_card.dart';  
+import 'package:ppu_feeds/custom_widgets/post_card.dart';
 
 class CourseFeedsScreen extends StatefulWidget {
   final int courseId;
@@ -20,12 +20,16 @@ class _CourseFeedsScreenState extends State<CourseFeedsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Course Feeds'),
+        backgroundColor: const Color(0xFF0A7075),
+        title: const Text(
+          'Course Feeds',
+          style: TextStyle(fontSize: 24, color: Colors.white),
+        ),
       ),
       body: PostCard(
-        courseId: widget.courseId,   
+        courseId: widget.courseId,
         sectionId: widget.sectionId,
-        ),
-     );
-}
+      ),
+    );
+  }
 }

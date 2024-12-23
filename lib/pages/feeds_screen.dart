@@ -55,26 +55,33 @@ class _FeedsScreenState extends State<FeedsScreen> {
         ),
       ),
       drawer: const AppDrawer(),
-      body: FutureBuilder<List<Course>>(
-        future: futureCourses,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.data!.isEmpty) {
-            return const Center(child: Text("No courses available"));
-          } else {
-            final courses = snapshot.data!;
-            return ListView.builder(
-              itemCount: courses.length,
-              itemBuilder: (context, index) {
-                final Course course = courses[index];
-                return CourseCard(id: course.id);
-              },
-            );
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            futureCourses = fetchedCourses();
+          });
         },
+        child: FutureBuilder<List<Course>>(
+          future: futureCourses,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            } else if (snapshot.data!.isEmpty) {
+              return const Center(child: Text("No courses available"));
+            } else {
+              final courses = snapshot.data!;
+              return ListView.builder(
+                itemCount: courses.length,
+                itemBuilder: (context, index) {
+                  final Course course = courses[index];
+                  return CourseCard(id: course.id);
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

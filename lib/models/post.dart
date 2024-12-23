@@ -13,10 +13,10 @@ class Post {
 
   factory Post.fromJson(dynamic jsonObject) {
     return Post(
-      id: jsonObject["id"],
-      body: jsonObject["body"],
-      datePosted: jsonObject["date_posted"],
-      author: jsonObject["author"],
+      id: jsonObject["id"] ?? 'Unknown ID',
+      body: jsonObject["body"] ?? 'Unknown Author',
+      datePosted: jsonObject["date_posted"] ?? 'No content',
+      author: jsonObject["author"] ?? 'Unknown Date',
     );
   }
 }
