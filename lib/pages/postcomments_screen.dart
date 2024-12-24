@@ -24,8 +24,6 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
   late Future<List<Comment>> futureComments;
   final TextEditingController _commentController = TextEditingController();
   final TextEditingController _editController = TextEditingController();
-
-  // Track likes for each comment locally
   Map<int, bool> likedComments = {};
 
   @override
@@ -168,7 +166,6 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
     }
   }
 
-  // ** new function to handle toggle like **
   Future<void> toggleLike(
       int courseId, int sectionId, int postId, int commentId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -186,7 +183,6 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
 
       if (response.statusCode == 200) {
         setState(() {
-          // Toggle the like state of the comment
           likedComments[commentId] = !(likedComments[commentId] ?? false);
         });
 
@@ -412,12 +408,7 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
                                                 widget.postId,
                                                 comment.id),
                                             builder: (context, likeSnapshot) {
-                                              if (likeSnapshot
-                                                      .connectionState ==
-                                                  ConnectionState.waiting) {
-                                                return const CircularProgressIndicator();
-                                              } else if (likeSnapshot
-                                                  .hasError) {
+                                              if (likeSnapshot.hasError) {
                                                 return IconButton(
                                                   icon: const Icon(
                                                     Icons.thumb_up,
@@ -460,14 +451,9 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
                                                     widget.postId,
                                                     comment.id),
                                                 builder: (context, snapshot) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return const CircularProgressIndicator();
-                                                  } else if (snapshot
-                                                      .hasError) {
+                                                  if (snapshot.hasError) {
                                                     return const Text(
-                                                      "Likes: 0",
+                                                      "0 Likes",
                                                       style: TextStyle(
                                                           color: Colors.grey),
                                                     );
